@@ -23,8 +23,9 @@ func Test_MemDB(t *testing.T) {
 
 	memDB := NewMemDB()
 	t.Run("insert person", func(t *testing.T) {
-		err := memDB.Insert(personData)
+		id, err := memDB.Insert(personData)
 		assert.Nil(t, err)
+		assert.Equal(t, key, id)
 
 		value, found := memDB.Get(key)
 		assert.True(t, found)
@@ -73,11 +74,12 @@ func Test_MemDB_Insert_Limits(t *testing.T) {
 	for _, test := range testCases {
 		t.Run(test.testName, func(t *testing.T) {
 			personData := parsePerson(test.name, test.id, test.age)
-			err := memDB.Insert(personData)
+			id, err := memDB.Insert(personData)
 			if test.mustFail {
 				assert.NotNil(t, err)
 			} else {
 				assert.Nil(t, err)
+				assert.Equal(t, test.id, id)
 				assert.Equal(t, test.name, personData.Name)
 				assert.Equal(t, test.id, personData.ID)
 				assert.Equal(t, test.age, personData.Age)

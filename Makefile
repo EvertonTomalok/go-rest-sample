@@ -13,3 +13,8 @@ server: envvars build
 .PHONY: mocks
 mocks:
 	mockgen -source=./internal/ports/repository.go -destination=./internal/ports/repository_mock.go -package=ports
+
+.PHONY: test
+test:
+	go test ./... -v
+	
