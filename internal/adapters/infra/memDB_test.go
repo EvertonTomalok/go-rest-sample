@@ -19,31 +19,31 @@ func parsePerson(name string, id int64, age int) entities.Person {
 
 func Test_MemDB(t *testing.T) {
 	key := int64(1)
-	personData := parsePerson("Everton Tomalok", 1, 25)
+	personData := parsePerson("Everton Tomalok", key, 25)
 
 	memDB := NewMemDB()
-	t.Run("insert port", func(t *testing.T) {
-		err := memDB.Upsert(key, personData)
-		assert.Nil(t, err)
-
-		value, found := memDB.Get(key)
-		assert.True(t, found)
-		assert.Equal(t, "Ajman", value.Name)
-	})
-
-	t.Run("update port", func(t *testing.T) {
-		personData.Name = "Everton Tomalok" // overwritten name
-
-		err := memDB.Upsert(key, personData)
+	t.Run("insert person", func(t *testing.T) {
+		err := memDB.Insert(personData)
 		assert.Nil(t, err)
 
 		value, found := memDB.Get(key)
 		assert.True(t, found)
 		assert.Equal(t, "Everton Tomalok", value.Name)
 	})
+
+	t.Run("update person", func(t *testing.T) {
+		personData.Name = "Everton Tomalok Updated" // overwritten name
+
+		err := memDB.Update(personData)
+		assert.Nil(t, err)
+
+		value, found := memDB.Get(key)
+		assert.True(t, found)
+		assert.Equal(t, "Everton Tomalok Updated", value.Name)
+	})
 }
 
-func Test_MemDB_Limits(t *testing.T) {
+func Test_MemDB_Insert_Limits(t *testing.T) {
 	memDB := NewMemDB(WithMaxSize(1)) // set map to have max size 1
 
 	type testCase struct {
@@ -68,19 +68,12 @@ func Test_MemDB_Limits(t *testing.T) {
 			age:      26,
 			mustFail: true,
 		},
-		{
-			testName: "third insert must work since it's an update",
-			name:     "Everton Tomalok Updated",
-			id:       1,
-			age:      27,
-			mustFail: false,
-		},
 	}
 
 	for _, test := range testCases {
 		t.Run(test.testName, func(t *testing.T) {
 			personData := parsePerson(test.name, test.id, test.age)
-			err := memDB.Upsert(test.id, personData)
+			err := memDB.Insert(personData)
 			if test.mustFail {
 				assert.NotNil(t, err)
 			} else {

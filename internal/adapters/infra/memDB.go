@@ -22,14 +22,22 @@ type memDB struct {
 }
 
 // Upsert the database person collection.
-func (db *memDB) Upsert(identifier int64, person entities.Person) error {
-	// if person is not present on the map but max size was achieve, it will
-	// return error
-	if len(db.data) == db.maxSize {
-		_, found := db.Get(identifier)
-		if !found {
-			return MaxSizeAchievedErr
-		}
+func (db *memDB) Insert(person entities.Person) error {
+	if db.Size() >= db.maxSize {
+		return MaxSizeAchievedErr
+	}
+	_, found := db.Get(person.ID)
+	if found {
+		return RecordExistsErr
+	}
+	db.data[person.ID] = person
+	return nil
+}
+
+func (db *memDB) Update(person entities.Person) error {
+	_, found := db.Get(person.ID)
+	if !found {
+		return RecordNotFoundErr
 	}
 	db.data[person.ID] = person
 	return nil
@@ -38,6 +46,10 @@ func (db *memDB) Upsert(identifier int64, person entities.Person) error {
 func (db *memDB) Get(identifier int64) (entities.Person, bool) {
 	item, found := db.data[identifier]
 	return item, found
+}
+
+func (db *memDB) Delete(key int64) error {
+	return nil
 }
 
 func (db *memDB) Size() int {

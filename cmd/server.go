@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/evertontomalok/go-rest-sample/internal/adapters/infra"
 	"github.com/evertontomalok/go-rest-sample/internal/app"
 	"github.com/evertontomalok/go-rest-sample/internal/app/server"
 	"github.com/spf13/cobra"
@@ -13,7 +14,8 @@ var serverCmd = &cobra.Command{
 		ctx := cmd.Context()
 
 		config := app.Configure(ctx)
-		server.RunServer(ctx, config)
+		repo := infra.NewMemDB()
+		server.RunServer(ctx, config, repo)
 	},
 }
 

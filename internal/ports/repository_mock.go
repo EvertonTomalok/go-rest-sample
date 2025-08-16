@@ -35,7 +35,7 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // Delete mocks base method.
-func (m *MockRepository) Delete(key string) error {
+func (m *MockRepository) Delete(key int64) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", key)
 	ret0, _ := ret[0].(error)
@@ -49,7 +49,7 @@ func (mr *MockRepositoryMockRecorder) Delete(key interface{}) *gomock.Call {
 }
 
 // Get mocks base method.
-func (m *MockRepository) Get(key string) (entities.Person, bool) {
+func (m *MockRepository) Get(key int64) (entities.Person, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", key)
 	ret0, _ := ret[0].(entities.Person)
@@ -61,6 +61,20 @@ func (m *MockRepository) Get(key string) (entities.Person, bool) {
 func (mr *MockRepositoryMockRecorder) Get(key interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockRepository)(nil).Get), key)
+}
+
+// Insert mocks base method.
+func (m *MockRepository) Insert(value entities.Person) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Insert", value)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Insert indicates an expected call of Insert.
+func (mr *MockRepositoryMockRecorder) Insert(value interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockRepository)(nil).Insert), value)
 }
 
 // Size mocks base method.
@@ -77,16 +91,16 @@ func (mr *MockRepositoryMockRecorder) Size() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Size", reflect.TypeOf((*MockRepository)(nil).Size))
 }
 
-// Upsert mocks base method.
-func (m *MockRepository) Upsert(key string, value entities.Person) error {
+// Update mocks base method.
+func (m *MockRepository) Update(value entities.Person) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", key, value)
+	ret := m.ctrl.Call(m, "Update", value)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// Upsert indicates an expected call of Upsert.
-func (mr *MockRepositoryMockRecorder) Upsert(key, value interface{}) *gomock.Call {
+// Update indicates an expected call of Update.
+func (mr *MockRepositoryMockRecorder) Update(value interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockRepository)(nil).Upsert), key, value)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockRepository)(nil).Update), value)
 }
