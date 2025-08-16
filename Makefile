@@ -1,0 +1,11 @@
+ENV_VARS =$(shell grep -v "^\#" .env | xargs)
+
+envvars:
+	@echo "export $(ENV_VARS)"
+
+build:
+	go build -o exe main.go
+
+.PHONY: server
+server: envvars build
+	./exe server
