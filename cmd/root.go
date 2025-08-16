@@ -9,8 +9,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "go-template",
-	Short: "Backend Go lang Template",
+	Use:   "go-rest-sample",
+	Short: "Backend Go rest sample",
 }
 
 func Execute() {

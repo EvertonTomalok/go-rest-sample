@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"math"
+
 	"github.com/evertontomalok/go-rest-sample/internal/adapters/infra"
 	"github.com/evertontomalok/go-rest-sample/internal/app"
 	"github.com/evertontomalok/go-rest-sample/internal/app/server"
@@ -14,7 +16,9 @@ var serverCmd = &cobra.Command{
 		ctx := cmd.Context()
 
 		config := app.Configure(ctx)
-		repository := infra.NewMemDB()
+		repository := infra.NewMemDB(
+			infra.WithMaxSize(int(math.Pow10(10))), // 10 ** 5 == 100.000
+		)
 		server.RunServer(ctx, config, repository)
 	},
 }
