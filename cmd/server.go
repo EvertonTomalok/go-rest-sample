@@ -14,8 +14,8 @@ var serverCmd = &cobra.Command{
 		ctx := cmd.Context()
 
 		config := app.Configure(ctx)
-		repo := infra.NewMemDB()
-		server.RunServer(ctx, config, repo)
+		repository := infra.NewMemDB()
+		server.RunServer(ctx, config, repository)
 	},
 }
 

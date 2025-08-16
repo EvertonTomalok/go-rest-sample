@@ -1,6 +1,8 @@
 package infra
 
 import (
+	"sync/atomic"
+
 	"github.com/evertontomalok/go-rest-sample/internal/app/domain/entities"
 )
 
@@ -17,21 +19,19 @@ func NewMemDB(options ...Option) *memDB {
 // In memory map struct database with a maxSize attribute to control
 // max size of the database.
 type memDB struct {
-	data    map[int64]entities.Person
-	maxSize int
+	data           map[int64]entities.Person
+	lastIndexAdded atomic.Int64
+	maxSize        int
 }
 
 // Upsert the database person collection.
-func (db *memDB) Insert(person entities.Person) error {
+func (db *memDB) Insert(person entities.Person) (int64, error) {
 	if db.Size() >= db.maxSize {
-		return MaxSizeAchievedErr
+		return 0, MaxSizeAchievedErr
 	}
-	_, found := db.Get(person.ID)
-	if found {
-		return RecordExistsErr
-	}
+	person.ID = db.lastIndexAdded.Add(1)
 	db.data[person.ID] = person
-	return nil
+	return person.ID, nil
 }
 
 func (db *memDB) Update(person entities.Person) error {
@@ -49,6 +49,11 @@ func (db *memDB) Get(identifier int64) (entities.Person, bool) {
 }
 
 func (db *memDB) Delete(key int64) error {
+	_, found := db.Get(key)
+	if !found {
+		return RecordNotFoundErr
+	}
+	delete(db.data, key)
 	return nil
 }
 

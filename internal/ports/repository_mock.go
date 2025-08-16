@@ -64,11 +64,12 @@ func (mr *MockRepositoryMockRecorder) Get(key interface{}) *gomock.Call {
 }
 
 // Insert mocks base method.
-func (m *MockRepository) Insert(value entities.Person) error {
+func (m *MockRepository) Insert(value entities.Person) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", value)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Insert indicates an expected call of Insert.
