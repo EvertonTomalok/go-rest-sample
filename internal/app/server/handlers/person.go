@@ -11,22 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func parsePersonId(c *gin.Context) (int64, error) {
-	personIdParam := c.Param("personId")
-	personId, err := strconv.ParseInt(personIdParam, 10, 64)
-	if err != nil {
-		errMsg := fmt.Errorf("error converting string to integer: %s", err)
-		log.Error(errMsg)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid person ID"})
-		return 0, errMsg
-	}
-	return personId, nil
-}
-
-func NewPersonHandler(repo ports.Repository) *PersonHandler {
-	return &PersonHandler{repo: repo}
-}
-
 type PersonHandler struct {
 	repo ports.Repository
 }
@@ -50,7 +34,6 @@ func (p *PersonHandler) DeletePersonById(c *gin.Context) {
 		return
 	}
 
-	log.Infof("Fetching person id: %d", personId)
 	if err := p.repo.Delete(personId); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "person id not exist"})
 		return
@@ -58,7 +41,7 @@ func (p *PersonHandler) DeletePersonById(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"status": "ok"})
 }
 
-func (p *PersonHandler) UpdatePerson(c *gin.Context) {
+func (p *PersonHandler) UpdatePersonById(c *gin.Context) {
 	personId, err := parsePersonId(c)
 	if err != nil {
 		return
@@ -98,13 +81,8 @@ func (p *PersonHandler) InsertPerson(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"id": personId})
 }
 
-func (p *PersonHandler) GetPersonRoutes() []entities.Route {
-	var routes = []entities.Route{
-		{
-			Path:    "/person/:personId",
-			Method:  http.MethodGet,
-			Handler: p.GetPersonById,
-		},
+func (p *PersonHandler) GetRoutes() []Route {
+	var routes = []Route{
 		{
 			Path:    "/person",
 			Method:  http.MethodPost,
@@ -112,8 +90,13 @@ func (p *PersonHandler) GetPersonRoutes() []entities.Route {
 		},
 		{
 			Path:    "/person/:personId",
+			Method:  http.MethodGet,
+			Handler: p.GetPersonById,
+		},
+		{
+			Path:    "/person/:personId",
 			Method:  http.MethodPut,
-			Handler: p.UpdatePerson,
+			Handler: p.UpdatePersonById,
 		},
 		{
 			Path:    "/person/:personId",
@@ -122,4 +105,20 @@ func (p *PersonHandler) GetPersonRoutes() []entities.Route {
 		},
 	}
 	return routes
+}
+
+func parsePersonId(c *gin.Context) (int64, error) {
+	personIdParam := c.Param("personId")
+	personId, err := strconv.ParseInt(personIdParam, 10, 64)
+	if err != nil {
+		errMsg := fmt.Errorf("error converting string to integer: %s", err)
+		log.Error(errMsg)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid person ID"})
+		return 0, errMsg
+	}
+	return personId, nil
+}
+
+func NewPersonHandler(repo ports.Repository) *PersonHandler {
+	return &PersonHandler{repo: repo}
 }

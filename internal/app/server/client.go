@@ -6,9 +6,8 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/evertontomalok/go-rest-sample/internal/adapters/handlers"
 	config "github.com/evertontomalok/go-rest-sample/internal/app"
-	"github.com/evertontomalok/go-rest-sample/internal/app/domain/entities"
+	"github.com/evertontomalok/go-rest-sample/internal/app/server/handlers"
 	"github.com/evertontomalok/go-rest-sample/internal/ports"
 
 	"github.com/evertontomalok/go-rest-sample/pkg/utils"
@@ -37,32 +36,18 @@ func RunServer(ctx context.Context, config config.Config, repository ports.Repos
 
 func Router(repo ports.Repository) *gin.Engine {
 	router := gin.Default()
-	injectRoutes(router, repo)
 
-	return router
-}
-
-func injectRoutes(router *gin.Engine, repo ports.Repository) {
-	var healthCheck = []entities.Route{
-		{
-			Path:    "/health",
-			Method:  http.MethodGet,
-			Handler: handlers.Health,
-		},
-		{
-			Path:    "/readiness",
-			Method:  http.MethodGet,
-			Handler: handlers.Readiness,
-		},
-	}
-	for _, route := range healthCheck {
+	healtCheckRoutes := handlers.HealthCheckRoutes{}
+	for _, route := range healtCheckRoutes.GetRoutes() {
 		router.Handle(route.Method, route.Path, route.Handler)
 	}
 
 	apiGroup := router.Group("/api")
 
 	personHandlers := handlers.NewPersonHandler(repo)
-	for _, route := range personHandlers.GetPersonRoutes() {
+	for _, route := range personHandlers.GetRoutes() {
 		apiGroup.Handle(route.Method, route.Path, route.Handler)
 	}
+
+	return router
 }
