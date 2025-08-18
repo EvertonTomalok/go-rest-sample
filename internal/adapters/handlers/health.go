@@ -6,9 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type HealthCheckRoutes struct{}
+func NewHealthCheckHandler() *HealthCheckHandler {
+	return &HealthCheckHandler{}
+}
 
-func (HealthCheckRoutes) GetRoutes() []Route {
+type HealthCheckHandler struct{}
+
+func (HealthCheckHandler) GetRoutes() []Route {
 	return []Route{
 		{
 			Path:   "/health",

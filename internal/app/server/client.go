@@ -6,8 +6,8 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/evertontomalok/go-rest-sample/internal/adapters/handlers"
 	config "github.com/evertontomalok/go-rest-sample/internal/app"
-	"github.com/evertontomalok/go-rest-sample/internal/app/server/handlers"
 	"github.com/evertontomalok/go-rest-sample/internal/ports"
 
 	"github.com/evertontomalok/go-rest-sample/pkg/utils"
@@ -37,11 +37,13 @@ func RunServer(ctx context.Context, config config.Config, repository ports.Repos
 func Router(repo ports.Repository) *gin.Engine {
 	router := gin.Default()
 
-	healtCheckRoutes := handlers.HealthCheckRoutes{}
+	// Injecting health check routes
+	healtCheckRoutes := handlers.NewHealthCheckHandler()
 	for _, route := range healtCheckRoutes.GetRoutes() {
 		router.Handle(route.Method, route.Path, route.Handler)
 	}
 
+	// Injecting api routes
 	apiGroup := router.Group("/api")
 
 	personHandlers := handlers.NewPersonHandler(repo)
